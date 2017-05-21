@@ -27,3 +27,12 @@ SELECT s.classroom, COUNT(*)
     FROM list s
     WHERE s.grade = 0
     GROUP BY s.classroom;
+
+-- Q4: For each 4th grade classroom, report the student (last name) who is 
+--     last alpha on the class roster. Sort output by classroom.
+
+SELECT DISTINCT s1.classroom, MAX(s1.LastName)
+    FROM list s1
+    WHERE 
+        s1.grade = 4
+    GROUP BY s1.classroom;
