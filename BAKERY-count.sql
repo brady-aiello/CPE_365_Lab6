@@ -13,7 +13,7 @@ SELECT Flavor, AVG(Price), COUNT(*)
 
 -- Q2: Find the total amount of $ the bakery earned Oct 2007 from eclairs.
 
-SELECT SUM(g.Price)
+SELECT SUM(g.Price) AS 'OCT 2007 Eclair Revenue'
     FROM goods g, receipts r, items i
     WHERE
         i.Receipt = r.RNumber
@@ -27,7 +27,7 @@ SELECT SUM(g.Price)
 --     date of purchase, total number of items purchased, and the amount paid.
 --     Sort in desc. order of amount paid.
 
-SELECT r.RNumber, r.SaleDate, COUNT(*), SUM(g.Price)
+SELECT r.RNumber, r.SaleDate, COUNT(*) AS 'items', SUM(g.Price) AS 'total'
     FROM goods g, receipts r, items i, customers c
     WHERE 
         i.Receipt = r.RNumber
@@ -35,7 +35,8 @@ SELECT r.RNumber, r.SaleDate, COUNT(*), SUM(g.Price)
         AND r.Customer = c.CId
         AND c.LastName = 'STENZ'
         AND c.FirstName = 'NATACHA'
-    GROUP BY r.RNumber;
+    GROUP BY r.RNumber
+    ORDER BY SUM(g.Price) DESC;
 
 -- Q4: For each day of the week of Oct 8 (Mon - Sun) report the tot. num
 --     purchases(receipts) , tot pastries purchased, and overal daily revenue.
