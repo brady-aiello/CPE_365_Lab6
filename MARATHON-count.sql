@@ -13,12 +13,12 @@ SELECT AgeGroup, Sex, COUNT(*) AS 'runners', MIN(m1.Place), MAX(m1.Place)
 -- Q2: Report the total number of gender/age groups for which both the 1st
 --     and the 2nd place runners (within the group) hail from the same state.
 
-SELECT COUNT(*)
+SELECT COUNT(*) AS 'times 1st and 2nd place in group are from same state'
     FROM marathon m1, marathon m2
     WHERE m1.AgeGroup = m2.AgeGroup
-    AND m1.Sex = m2.Sex
-    AND m1.State = m2.State
-    AND m1.GroupPlace = 1 AND m2.GroupPlace = 2;
+        AND m1.Sex = m2.Sex
+        AND m1.State = m2.State
+        AND m1.GroupPlace = 1 AND m2.GroupPlace = 2;
        
 -- Q3: For each full minute, report the total number of runners whose pace was
 --     between that number of minutes and the next (That is, how many runners
@@ -36,7 +36,7 @@ SELECT MINUTE(Pace) AS 'Pace(low)', MINUTE(Pace) + 1 AS 'Pace(high)',
 --     output info about that state). Output in desc. order by the computed
 --     number.
 
-SELECT State, COUNT(*)
+SELECT State, COUNT(*) AS 'top 10 runners in gender-age group'
     FROM marathon
     WHERE GroupPlace < 11
     GROUP BY State

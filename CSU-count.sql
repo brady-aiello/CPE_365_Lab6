@@ -26,22 +26,23 @@ SELECT c.Campus, AVG(e.Enrolled), MAX(e.Enrolled), MIN(e.Enrolled)
 --     degrees granted between 1998 and 2002. Sort output in desc. order by
 --     the number of degrees.
 
-SELECT c.Campus, c.County, SUM(d.degrees)
+SELECT c.Campus, c.County, SUM(d.degrees) AS 'total degrees'
     FROM campuses c, degrees d
     WHERE d.CampusId = c.Id 
     AND c.County IN ('Los Angeles', 'Orange')
     AND d.year BETWEEN 1998 AND 2002
-    GROUP BY c.Campus;
+    GROUP BY c.Campus
+    ORDER BY SUM(d.degrees) DESC;
 
 -- Q4: For each campus that had more than 20000 enrolled students in 2004 
 --     report the number of disciplines for which the campus had non-zero
 --     graduate enrollment. Sort the output in alphabetical order by the name
 --     of the campus.
 
-SELECT c.Campus, COUNT(*)
+SELECT c.Campus, COUNT(*) AS 'disciplines with grad students'
     FROM campuses c, discEnr den, enrollments e
     WHERE 
         den.CampusId = c.Id AND e.CampusId = c.Id AND e.Year = den.year
-        AND den.year = 2004 AND den.Gr <> 0 AND e.Enrolled > 20000
+        AND den.year = 2004 AND den.Gr > 0 AND e.Enrolled > 20000
     GROUP BY c.Id
     ORDER BY c.Campus;

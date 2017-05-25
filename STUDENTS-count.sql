@@ -23,7 +23,7 @@ SELECT s.Grade, COUNT(DISTINCT s.classroom) AS 'classrooms',
 -- Q3: For each kindergarten classroom, report the total number of students.
 --     Sort output in desc. order by num students.
 
-SELECT s.classroom, COUNT(*)
+SELECT s.classroom, COUNT(*) AS 'students'
     FROM list s
     WHERE s.grade = 0
     GROUP BY s.classroom;

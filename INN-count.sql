@@ -6,15 +6,15 @@
 --     revenue.
 
 SELECT rooms.RoomCode, rooms.RoomName, 
-        SUM((res.Checkout - res.CheckIn) * res.Rate) 
+        ROUND(SUM((res.Checkout - res.CheckIn) * res.Rate), 2)
             AS 'total revenue', 
-        AVG((res.Checkout - res.CheckIn) * res.Rate) 
+        ROUND(AVG((res.Checkout - res.CheckIn) * res.Rate), 2)
             AS 'avg revenue' 
     FROM rooms, reservations res
     WHERE res.Room = rooms.RoomCode
     AND MONTH(res.CheckIn) IN (9, 10, 11)
     GROUP BY res.Room
-    ORDER BY 'total revenue';
+    ORDER BY SUM((res.Checkout - res.CheckIn) * res.Rate) DESC;
  
 -- Q2: Report the total number of reservations that commenced on Fridays
 --     and the total revenue they brought in. (Hint: look up the date of 
@@ -24,7 +24,7 @@ SELECT COUNT(*) AS 'friday reservations',
     SUM((res.Checkout - res.CheckIn) * res.Rate) AS 'total revenue'
     FROM rooms, reservations res
     WHERE res.Room = rooms.RoomCode
-    AND DATE_FORMAT(res.CheckIn, '%a') = 'Fri'
+        AND DATE_FORMAT(res.CheckIn, '%a') = 'Fri'
     ORDER BY res.Checkin;
 
 -- Q3: For each day of the week, report the total number of reservations
@@ -32,12 +32,12 @@ SELECT COUNT(*) AS 'friday reservations',
 --     Report days of week as Monday, Tuesday, etc.
 
 SELECT DATE_FORMAT(res.CheckIn, '%a') AS' day', COUNT(*) AS 'reservations', 
-    SUM((res.Checkout - res.CheckIn) * res.Rate) AS 'total revenue'
+    ROUND(SUM((res.Checkout - res.CheckIn) * res.Rate), 2) AS 'total revenue'
     FROM rooms, reservations res
     WHERE res.Room = rooms.RoomCode
     GROUP BY DATE_FORMAT(res.CheckIn, '%a')
-    ORDER BY FIELD(day, '%a', 'Sun','Mon', 'Tue', 'Wed', 
-            'Thu', 'Fri', 'Sat');
+    ORDER BY FIELD(day, '%a', 'Mon', 'Tue', 'Wed', 
+            'Thu', 'Fri', 'Sat', 'Sun');
  
 -- Q4: For each room report the highest markup against the base price and
 --     the smallest markup (i.e., largest markdown). Report markups and
@@ -46,8 +46,8 @@ SELECT DATE_FORMAT(res.CheckIn, '%a') AS' day', COUNT(*) AS 'reservations',
 --     value of the largest markup. Report full names of the rooms.
 
 SELECT rooms.RoomName,
-        ABS(MAX(res.Rate - rooms.basePrice)) AS 'Max Mark up',
-        ABS(MAX(rooms.basePrice - res.Rate)) AS 'Max Mark down'
+        ROUND(ABS(MAX(res.Rate - rooms.basePrice)), 2) AS 'Max Mark up',
+        ROUND(ABS(MAX(rooms.basePrice - res.Rate)), 2) AS 'Max Mark down'
     FROM rooms, reservations res
     WHERE res.Room = rooms.RoomCode
     GROUP BY rooms.RoomCode
@@ -68,4 +68,4 @@ SELECT rooms.RoomName,
     GROUP BY rooms.RoomCode
     ORDER BY 
         SUM(1 + (LEAST(res.Checkout, DATE('2010-12-31')) - 
-        GREATEST(res.Checkin, DATE('2010-01-01')))); 
+        GREATEST(res.Checkin, DATE('2010-01-01')))) DESC; 

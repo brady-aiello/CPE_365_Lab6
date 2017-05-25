@@ -5,7 +5,7 @@
 --     the total nuber of different pastries of this flavor on the menu. Sort
 --     the output in asc. order by avg. price.
 
-SELECT Flavor, AVG(Price), COUNT(*)
+SELECT Flavor, AVG(Price), COUNT(*) AS 'pastries'
     FROM goods
     GROUP BY Flavor
     HAVING COUNT(*) > 3
@@ -27,7 +27,8 @@ SELECT SUM(g.Price) AS 'OCT 2007 Eclair Revenue'
 --     date of purchase, total number of items purchased, and the amount paid.
 --     Sort in desc. order of amount paid.
 
-SELECT r.RNumber, r.SaleDate, COUNT(*) AS 'items', SUM(g.Price) AS 'total'
+SELECT r.RNumber, r.SaleDate, COUNT(*) AS 'items', 
+        SUM(g.Price) AS 'total spent'
     FROM goods g, receipts r, items i, customers c
     WHERE 
         i.Receipt = r.RNumber
@@ -44,7 +45,8 @@ SELECT r.RNumber, r.SaleDate, COUNT(*) AS 'items', SUM(g.Price) AS 'total'
 --     and the date.
 
 SELECT DATE_FORMAT(r.SaleDate, '%a') AS 'day', r.SaleDate AS 'date', 
-    COUNT(*) AS 'purchases', SUM(g.Price) AS 'revenue'
+    COUNT(DISTINCT r.Rnumber) AS 'purchases',
+    COUNT(*) AS 'pastries', SUM(g.Price) AS 'revenue'
     FROM goods g, receipts r, items i, customers c
     WHERE 
         i.Receipt = r.RNumber
@@ -53,7 +55,7 @@ SELECT DATE_FORMAT(r.SaleDate, '%a') AS 'day', r.SaleDate AS 'date',
         AND r.SaleDate BETWEEN '2007-10-08' AND '2007-10-14'
     GROUP BY r.SaleDate;
 
--- Q5: Report all day on which more than 10 tarts were purchased, sorted in
+-- Q5: Report all days on which more than 10 tarts were purchased, sorted in
 --     chrono. order.
 
 SELECT r.SaleDate
@@ -64,4 +66,5 @@ SELECT r.SaleDate
         AND r.Customer = c.CId
         AND g.Food = 'Tart'
     GROUP BY r.SaleDate
-        HAVING COUNT(*) > 10;
+        HAVING COUNT(*) > 10
+    ORDER BY r.SaleDate;

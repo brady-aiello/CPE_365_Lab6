@@ -29,9 +29,9 @@ SELECT COUNT(DISTINCT f1.Source)
     FROM flights f1, flights f2
     WHERE
         f2.Destination = 'ATE' 
-        AND (f2.Source = f1.Destination AND f1.Source <> 'ATE' 
+        AND ((f2.Source = f1.Destination AND f1.Source <> 'ATE' 
             AND f1.Destination <> 'ATE')
-        OR (f1.Destination = 'ATE')
+        XOR (f1.Destination = 'ATE'))
     ORDER BY f1.Source;
  
 -- Q4: For each airline report the total number of airports from which it has
@@ -44,4 +44,5 @@ SELECT DISTINCT al.Name, COUNT(DISTINCT f.Source)
     WHERE f.Airline = al.Id
         AND ap.Code = f.Source
     GROUP BY al.Id
-        HAVING COUNT(DISTINCT f.Source) > 0;
+        HAVING COUNT(DISTINCT f.Source) > 0
+    ORDER BY COUNT(DISTINCT f.Source) DESC;

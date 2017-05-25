@@ -50,15 +50,15 @@ SELECT cdh1.Year AS 'Year', MAX(cdt.MPG), MIN(cdt.MPG), AVG(cdt.MPG)
         AND cdh3.Id = mah3.Id AND mah3.Model = moh3.model 
         AND moh3.Maker = cmh.Id AND cmh.Maker = 'honda'
 
-        AND mah1.Id < mah2.Id AND mah1.Id < mah3.Id AND mah2.Id < mah3.Id
+        AND mah1.Id < mah2.Id AND mah2.Id < mah3.Id
         AND cdh2.Year = cdh3.Year AND cdh1.Year = cdh2.Year
         
         AND cdt.Id = mat.Id AND mat.Model = mot.model 
         AND mot.Maker = cmt.Id AND cmt.Maker = 'toyota'
         AND cdh1.Year = cdt.Year
+    GROUP BY cdh1.Year
     ORDER BY cdh1.Year;
 
- 
 -- Q4: For each year when US-manufactured cars avg'd < 100 horsepower, report
 --     the highest and lowest engine displacement number. Sort chrono.
 
