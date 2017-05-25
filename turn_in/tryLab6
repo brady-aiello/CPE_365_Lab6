@@ -1,0 +1,115 @@
+#!/bin/python3
+import glob, tarfile, os, sys, zipfile, subprocess, re
+from os import path
+
+def match(pattern, s):
+    return re.search(pattern, s, re.IGNORECASE)
+
+def get_archive_name(prefix):
+    valid_archives = glob.glob(prefix + ".*")
+
+    if len(valid_archives) == 0:
+        print("No archive found")
+        return None
+    elif len(valid_archives) == 1:
+        return valid_archives[0]
+    else:
+        print("Multiple archives found")
+        return valid_archives[0]
+
+def unzip_archive(archive_name):
+    archive = None
+
+    if tarfile.is_tarfile(archive_name):
+        archive = tarfile.open(archive_name, 'r')
+    elif zipfile.is_zipfile(archive_name):
+        archive = zipfile.ZipFile(archive_name)
+    else:
+        return 1
+
+    archive.extractall('.')
+
+    return 0
+
+def build_paths(databases):
+    all_db_paths = ['README']
+    for db in databases:
+        all_db_paths.append(db + "-count.sql")
+    return all_db_paths
+
+def build_header(dataset, count):
+    return '''\
+==========================
+| Dataset: {:12}  |
+| Queries Found: {:2}      |
+==========================
+
+'''.format(dataset, count)
+
+def test_required_files(required_files):
+
+    for req in required_files:
+        if "count" in req:
+            try:    
+                fot = open(req, 'r')
+            except:
+                print("Missing {}".format(req))
+                continue
+
+            queries = []
+            query_lines = []
+            for line in fot:
+                if match(r'-- Q\d', line):
+                    queries.append(query_lines)
+                    query_lines = []
+                query_lines.append(line)
+
+            queries.append(query_lines)
+            queries = list(map(lambda x: ''.join(x), queries))
+            divided_out = ''
+            if len(queries) == 0:
+                divided_out = ("WARNING, No queries found, please double check"
+                        " that your formatting is compliant")
+
+            dataset = req.split('-')[0]
+
+            for query in queries:
+                if match(r'^use .*$', line):
+                    divided_out = "Use statement found, will not parse"
+                    break
+                divided_out += query
+                divided_out += ''.join(['-'] * 79) + '\n'
+
+            num_queries = max(len(queries) - 1, 0)
+            divided_out = build_header(dataset, num_queries) + divided_out
+            p = subprocess.Popen(["less"], stdin=subprocess.PIPE)
+            p.communicate(input=bytes(divided_out, 'utf-8'))
+
+        elif not path.isfile(req):
+            print("Missing {}".format(req))
+            continue
+
+
+def main():
+    databases = ['BAKERY', 'CARS', 'CSU', 'INN', 'KATZENJAMMER', 'STUDENTS',
+'WINE', 'AIRLINES', 'MARATHON']
+
+    name = get_archive_name("lab6")
+
+    if name is None:
+        return 1
+
+    ret = unzip_archive(name)
+
+    if ret != 0:
+        print("Invalid archive format")
+        return 1
+
+    required_files = build_paths(databases)
+
+    test_required_files(required_files)
+
+    return 0
+
+if __name__ == '__main__':
+    sys.exit(main())
